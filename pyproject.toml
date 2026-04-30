@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "vcf2maf_lite"
+version = "0.1.2"
+description = "VCF to MAF format converter"
+authors = [
+	"Angelica Ochoa",
+	"Ramya Madupuri",
+	"Ruslan Forostianov",
+	"Ino de Bruijn",
+	"Pieter Lukasse"
+]
+maintainers = [
+	"Ramya Madupuri",
+	"Xiang Li",
+	"Jason Hwee",
+	"Ino de Bruijn"
+]
+readme = "pypi.md"
+license = "MIT"
+repository = "https://github.com/genome-nexus/vcf2maf-lite"
+keywords = ["vcf2maf", "vcftomaf", "vcf", "maf", "lite"]
+
+[tool.poetry.scripts]
+vcf2maf_lite = "vcf2maf_lite.vcf2maf_lite:main"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/genome-nexus/vcf2maf-lite/issues"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+chardet = "^5.0.0"
+click = "8.0.*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

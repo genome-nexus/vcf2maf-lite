@@ -543,14 +543,15 @@ def resolve_vcf_allele_depth_values(
         )
     ):
         # check if ref count or alt count are still missing but AF VCF field is available
-        if is_missing_vcf_data_value(ref_count):
-            ref_count = str(
+        # NOTE: In VCF, AF represents the ALT allele frequency, so depth * AF = alt_count
+        if is_missing_vcf_data_value(alt_count):
+            alt_count = str(
                 round(float(depth) * float(mapped_sample_format_data["AF"]))
             )
-        if is_missing_vcf_data_value(alt_count) and not is_missing_vcf_data_value(
-            ref_count
+        if is_missing_vcf_data_value(ref_count) and not is_missing_vcf_data_value(
+            alt_count
         ):
-            alt_count = str(round(float(depth) - float(ref_count)))
+            ref_count = str(round(float(depth) - float(alt_count)))
 
     return (ref_count, alt_count, depth)
 
@@ -952,7 +953,10 @@ def resolve_vcf_variant_allele_data(vcf_data, maf_data):
                 alt_allele = alt_allele[1:]
 
             # fix start position value
-            if start_pos != "":
+            # For insertions (where ref becomes "-"), the start position should remain
+            # at the original VCF POS per MAF convention (start and end flank the insertion site).
+            # Only increment start position for deletions and other non-insertion indels.
+            if start_pos != "" and ref_allele != "-":
                 start_pos = str(int(start_pos) + 1)
 
         # resolve variant type, end position, and variant class
@@ -1319,6 +1323,7 @@ def get_vcf_sample_and_normal_ids(filename, tumor_id, normal_id):
         raise Exception(
             f"There is normal_sample={vcf_meta_header['normal_sample']} in the header, but no respective column found."
         )
+
     if (
         "tumor_sample" in vcf_meta_header and "normal_sample" not in vcf_meta_header
     ) or ("normal_sample" in vcf_meta_header and "tumor_sample" not in vcf_meta_header):

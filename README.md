@@ -2,9 +2,10 @@
 
 vcf2maf_lite is a lightweight Python adaptation of the [vcf2maf Perl tool](https://github.com/mskcc/vcf2maf), designed to convert the VCF format to MAF format without adding variant annotations. For annotating a MAF file, [Genome Nexus](https://github.com/genome-nexus/genome-nexus-annotation-pipeline) can be utilized.
 
-Usage:
+### Command Line Interface
 
 ```
+cd vcf2maf_lite/
 python3 vcf2maf_lite.py --help
 
   -i | --input-data             A list of .vcf files or input data directories, separated by commas [required]
@@ -17,14 +18,9 @@ python3 vcf2maf_lite.py --help
   -f | --retain-fmt             Comma-delimited names of FORMAT fields to retain as extra columns in MAF [optional]
 ```
 
-### Requirements
+#### Running the tool example
 ```
-python 3
-```
-
-### Running the tool example
-```
-python3 vcf2maf.py --input-data /data/vcf --output-directory /data/maf/ --center CTR --sequence-source WGS --tumor-id Tumor --normal-id Normal --retain-info Custom_filters,AC,AF,AC_nfe_seu,AC_afr,AF_afr --retain-fmt alt_count_raw,ref_count_raw,depth_raw
+python3 vcf2maf_lite.py --input-data /data/vcf --output-directory /data/maf/ --center CTR --sequence-source WGS --tumor-id Tumor --normal-id Normal --retain-info Custom_filters,AC,AF,AC_nfe_seu,AC_afr,AF_afr --retain-fmt alt_count_raw,ref_count_raw,depth_raw
 ```
 
 This command converts the VCF files in /vcf folder to MAF format. 
@@ -35,6 +31,27 @@ This command converts the VCF files in /vcf folder to MAF format.
 - The `--retain-info` option allows you to specify the INFO fields to be retained as additional columns in the MAF. If the option is not used, standard MAF columns are included by default.
 - The `--retain-fmt` option allows you to specify the FORMAT fields to be retained as additional columns in the MAF. If the option is not used, standard MAF columns are included by default.
 
+### Installation using pip
+
+```
+pip3 install vcf2maf_lite
+```
+
+Quick Start:
+```
+vcf2maf_lite --help
+vcf2maf_lite --input-data /data/vcf --output-directory /data/maf/ --center CTR --sequence-source WGS --tumor-id Tumor --normal-id Normal --retain-info Custom_filters,AC,AF,AC_nfe_seu,AC_afr,AF_afr --retain-fmt alt_count_raw,ref_count_raw,depth_raw
+```
+
+Importing to Python Scripts:
+```
+from vcf2maf_lite.vcf2maf_lite import main
+from click.testing import CliRunner
+
+runner = CliRunner()
+runner.invoke(main, ['--input-data','test_vcf.vcf'])
+```
+
 ### Convert with Docker
 
 vcf2maf-lite is available in DockerHub at https://hub.docker.com/r/genomenexus/vcf2maf-lite
@@ -44,13 +61,13 @@ Usage:
 docker pull genomenexus/vcf2maf-lite:main
 ```
 ```
-docker run -v ${PWD}:/wd genomenexus/vcf2maf-lite:main python3 vcf2maf_lite.py --input-data /wd/test.vcf --output-directory /wd/maf/ --center CTR --sequence-source WGS --tumor-id Tumor --normal-id Normal --retain-info Custom_filters,AC,AF,AC_nfe_seu,AC_afr,AF_afr --retain-fmt alt_count_raw,ref_count_raw,depth_raw
+docker run -v ${PWD}:/wd genomenexus/vcf2maf-lite:main python3 vcf2maf_lite/vcf2maf_lite.py --input-data /wd/test.vcf --output-directory /wd/maf/ --center CTR --sequence-source WGS --tumor-id Tumor --normal-id Normal --retain-info Custom_filters,AC,AF,AC_nfe_seu,AC_afr,AF_afr --retain-fmt alt_count_raw,ref_count_raw,depth_raw
 ```
 - `-v ${PWD}:/wd`: This option maps the current working directory on local machine to the /wd directory inside the Docker container. This allows files in the local directory to be accessed from within the container.
 - `--input-data /wd/test.vcf`: This option specifies the input file location at /wd/test.vcf.
 - `--output-directory /wd/maf/`: This option specifies the output directory where the maf files will be saved. The files will be created at /wd/maf.
 
-### Resolving allele counts:
+### Resolving allele counts
 
 vcf2maf_lite supports the following VCF pipelines/methods for resolving the allele counts:
 - VarScan

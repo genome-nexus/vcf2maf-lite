@@ -3,8 +3,8 @@
 import unittest
 import tempfile
 import os
-from vcf2maf_lite import extract_vcf_data_from_file
-from vcf2maf_lite import write_standardized_mutation_file
+from vcf2maf_lite.vcf2maf_lite import extract_vcf_data_from_file
+from vcf2maf_lite.vcf2maf_lite import write_standardized_mutation_file
 
 class vcf2maf_lite_DataTests(unittest.TestCase):
 
@@ -289,6 +289,34 @@ class vcf2maf_lite_DataTests(unittest.TestCase):
         self.assertEqual('-', maf_row['Tumor_Seq_Allele2'])
         self.assertEqual('45796860', maf_row['Start_Position'])
         self.assertEqual('45796870', maf_row['End_Position'])
+
+        # Verify insertion coordinates: VCF POS should NOT be incremented for insertions
+        maf_row_ins = maf_data[1]
+        self.assertEqual('Frame_Shift_Ins', maf_row_ins['Variant_Classification'])
+        self.assertEqual('INS', maf_row_ins['Variant_Type'])
+        self.assertEqual('-', maf_row_ins['Reference_Allele'])
+        self.assertEqual('CC', maf_row_ins['Tumor_Seq_Allele2'])
+        self.assertEqual('10496754', maf_row_ins['Start_Position'])
+        self.assertEqual('10496755', maf_row_ins['End_Position'])
+
+    def test_insertion_coordinates_match_vcf2maf_pl(self):
+        """Test for GitHub issue #6: insertion coordinates should match vcf2maf.pl output."""
+        _, vcf = tempfile.mkstemp()
+        self.temp_files.append(vcf)
+        with open(vcf, 'w') as f:
+            f.write(
+            "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tTUMOR\n"
+            "1\t116579677\t.\tC\tCCTA\t.\tPASS\tDP=100\tGT:AD:DP\t0/1:50,50:100\n"
+            )
+        maf_data = extract_vcf_data_from_file(vcf, 'center name 1', 'sequence source 1')
+        self.assertEqual(1, len(maf_data))
+        maf_row = maf_data[0]
+        self.assertEqual('-', maf_row['Reference_Allele'])
+        self.assertEqual('CTA', maf_row['Tumor_Seq_Allele2'])
+        self.assertEqual('INS', maf_row['Variant_Type'])
+        # Per vcf2maf.pl expected output: start=116579677, end=116579678
+        self.assertEqual('116579677', maf_row['Start_Position'])
+        self.assertEqual('116579678', maf_row['End_Position'])
         
 
     def test_extract_vcf_data_from_file_na_in_output_file(self):

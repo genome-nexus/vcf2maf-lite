@@ -1,9 +1,7 @@
 name: Docker Image CI
 on:
-  push:
-    branches: 
-      - main
-    tags: '*'
+  release:
+    types: [published]
 
 jobs:
   build_and_publish:
@@ -19,9 +17,8 @@ jobs:
         with:
           images: |
             genomenexus/vcf2maf-lite
-          # The latest tag will also be generated on tag event with a valid semver tag
+          # latest tag is also generated for valid semver release tags
           tags: |
-            type=ref,event=branch
             type=semver,pattern={{version}}
 
       # The following two actions are required to build multi-platform images

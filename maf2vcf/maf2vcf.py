@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """maf2vcf - Reformat variants in a given MAF into generic VCFs with GT:AD:DP data if available.
 
-A Python port of maf2vcf.pl (vcf2maf, Cyriac Kandoth, Apache-2.0) with the bugs of that script fixed. 
+A Python port of maf2vcf.pl (vcf2maf: https://github.com/mskcc/vcf2maf) with the bugs of that script fixed. 
 """
 
 from __future__ import annotations

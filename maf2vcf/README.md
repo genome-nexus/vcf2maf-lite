@@ -5,6 +5,7 @@ with `GT:AD:DP` genotype fields. Optionally, the script can also
 generate one VCF for each tumor-normal pair.
 
 This is a Python port of `maf2vcf.pl` (from [vcf2maf](https://github.com/mskcc/vcf2maf)) with bugs of that script fixed. 
+
 ---
 
 ## Requirements

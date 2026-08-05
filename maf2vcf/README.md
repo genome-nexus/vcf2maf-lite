@@ -4,9 +4,7 @@ Convert variants from a MAF into a multi-sample VCF
 with `GT:AD:DP` genotype fields. Optionally, the script can also
 generate one VCF for each tumor-normal pair.
 
-This is a Python port of `maf2vcf.pl` (from [vcf2maf](https://github.com/mskcc/vcf2maf)) with bugs of that script fixed. See [Differences from the Perl
-version](#differences-from-the-perl-version) below for the fixes made.
-
+This is a Python port of `maf2vcf.pl` (from [vcf2maf](https://github.com/mskcc/vcf2maf)) with bugs of that script fixed. 
 ---
 
 ## Requirements
@@ -28,13 +26,13 @@ You do **not** need to index the FASTA. The script does it on the first run.
 ```bash
 cd maf2vcf/
 
-python3 maf2vcf.py --input-maf test_mafs/mut_somatic.maf --output-dir vcfs/ --ref-fasta ref_genome/Homo_sapiens.GRCh37.dna.primary_assembly.fa.gz
+python3 maf2vcf.py --input-maf test_mafs/mut_somatic.maf --output-dir vcfs --ref-fasta ref_genome/Homo_sapiens.GRCh37.dna.primary_assembly.fa.gz
 ```
 
 Add `--per-tn-vcfs` to also write one VCF per tumor-normal pair:
 
 ```bash
-python3 maf2vcf.py --input-maf test_mafs/mut_somatic.maf --output-dir vcfs/ --ref-fasta ref_genomes/Homo_sapiens.GRCh37.dna.primary_assembly.fa.gz --per-tn-vcfs
+python3 maf2vcf.py --input-maf test_mafs/mut_somatic.maf --output-dir vcfs --ref-fasta ref_genomes/Homo_sapiens.GRCh37.dna.primary_assembly.fa.gz --per-tn-vcfs
 ```
 ---
 
@@ -64,12 +62,12 @@ uses non-standard names. Any column that's missing or unparseable becomes `.` in
 
 | Argument | Default | Feeds |
 |---|---|---|
-| `--tum-depth-col NAME` | `t_depth` | Tumor `DP` |
-| `--tum-rad-col NAME` | `t_ref_count` | Tumor `AD`, REF element |
-| `--tum-vad-col NAME` | `t_alt_count` | Tumor `AD`, first ALT element |
-| `--nrm-depth-col NAME` | `n_depth` | Normal `DP` |
-| `--nrm-rad-col NAME` | `n_ref_count` | Normal `AD`, REF element |
-| `--nrm-vad-col NAME` | `n_alt_count` | Normal `AD`, first ALT element |
+| `--tum-depth-col` | `t_depth` | Tumor `DP` |
+| `--tum-rad-col` | `t_ref_count` | Tumor `AD`, REF element |
+| `--tum-vad-col` | `t_alt_count` | Tumor `AD`, first ALT element |
+| `--nrm-depth-col` | `n_depth` | Normal `DP` |
+| `--nrm-rad-col` | `n_ref_count` | Normal `AD`, REF element |
+| `--nrm-vad-col` | `n_alt_count` | Normal `AD`, first ALT element |
 
 ---
 
@@ -99,7 +97,7 @@ For an input named `mut_somatic.maf` and `--output-dir vcfs`:
 | `vcfs/mut_somatic.skipped.tsv` | **Only created if rows were skipped.** Header plus the skipped rows as-is, so the file is itself a valid MAF you can fix and re-run. |
 | `vcfs/<tumor>_vs_<normal>.vcf` | With `--per-tn-vcfs`: one two-sample VCF per pair. |
 
-Messages go to stderr, so `2> log.txt` catches them without touching data:
+Messages go to stderr:
 ```
 SKIPPED: 1 variant(s) - reference allele mismatch
 Converted 12 of 14 MAF variant line(s) into 11 VCF record(s) across 6 sample(s): vcfs/x.vcf
@@ -109,7 +107,7 @@ Converted 12 of 14 MAF variant line(s) into 11 VCF record(s) across 6 sample(s):
 
 **Records are merged across samples.** One VCF record per unique
 `(CHROM, POS, REF, ALT)`; a variant seen in 5 samples becomes one record with 5 populated
-genotype columns. The multi-sample record count can be lower than the MAF row count. Nothing is lost.
+genotype columns. The multi-sample VCF file record count can be lower than the MAF row count. Nothing is lost.
 
 **Skipped rows go to `.skipped.tsv`.** If that file isn't there, nothing was skipped.
 
